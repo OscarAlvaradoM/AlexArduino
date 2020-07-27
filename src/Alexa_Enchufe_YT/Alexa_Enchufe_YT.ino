@@ -12,13 +12,10 @@
 #else
   #include <ESP8266WiFi.h>
   #define TRIAC_PIN 0
-  #define boton  2
 #endif
 #include "fauxmoESP.h"
 
-int estado = LOW;         // the current state of the output pin
-int buttonState;             // the current reading from the input pin
-int lastButtonState = HIGH;   // the previous reading from the input pin
+int estado = HIGH;         // the current state of the output pin
 
 unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
 unsigned long debounceDelay = 50; 
@@ -33,40 +30,17 @@ unsigned long debounceDelay = 50;
 
 fauxmoESP fauxmo;
 
-
-// Wi-Fi Connection
-void wifiSetup() {
-  // Setear mod
-  WiFi.mode(WIFI_STA);
-
-  // Conectar
-  Serial.printf("[WIFI] Connecting to %s ", WIFI_SSID);
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
-
-  // Wait
-  while (WiFi.status() != WL_CONNECTED) {
-    Serial.print(".");
-    delay(100);
-  }
-  Serial.println();
-
-  // Connected!
-  Serial.printf("[WIFI] STATION Mode, SSID: %s, IP address: %s\n", WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
-}
-
 void setup() {
   // Init serial port and clean garbage
   Serial.begin(SERIAL_BAUDRATE);
   Serial.println();
 
+    // LED
+  pinMode(TRIAC_PIN, OUTPUT);
+  digitalWrite(TRIAC_PIN, HIGH);
+  
   // Wi-Fi connection
   wifiSetup();
-
-  // LED
-  pinMode(TRIAC_PIN, OUTPUT);
-  //digitalWrite(TRIAC_PIN, HIGH);
-  
-  //mySwitch.enableReceive(RF_RECEIVER);  // Receiver on interrupt 0 => that is pin #2
 
   // By default, fauxmoESP creates it's own webserver on the defined port
   // The TCP port must be 80 for gen3 devices (default is 1901)
@@ -105,7 +79,6 @@ void setup() {
       }
     }
   });
-
 }
 
 void loop() {
@@ -118,32 +91,24 @@ void loop() {
     last = millis();
     Serial.printf("[MAIN] Free heap: %d bytes\n", ESP.getFreeHeap());
   }
+}
 
-int reading = digitalRead(boton);
+// Wi-Fi Connection
+void wifiSetup() {
+  // Setear mod
+  WiFi.mode(WIFI_STA);
 
-  if (reading != lastButtonState) {
-    // reset the debouncing timer
-    lastDebounceTime = millis();
+  // Conectar
+  Serial.printf("[WIFI] Connecting to %s ", WIFI_SSID);
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+
+  // Wait
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    delay(100);
   }
+  Serial.println();
 
-  if ((millis() - lastDebounceTime) > debounceDelay) {
-    // whatever the reading is at, it's been there for longer than the debounce
-    // delay, so take it as the actual current state:
-
-    // if the button state has changed:
-    if (reading != buttonState) {
-      buttonState = reading;
-
-      // only toggle the LED if the new button state is LOW
-      if (buttonState == LOW) {
-        estado = !estado;
-        // Encender la luz:
-      digitalWrite(TRIAC_PIN, estado);
-      }
-    }
-  }
-
-  // save the reading. Next time through the loop, it'll be the lastButtonState:
-  lastButtonState = reading;
-    
+  // Connected!
+  Serial.printf("[WIFI] STATION Mode, SSID: %s, IP address: %s\n", WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
 }
