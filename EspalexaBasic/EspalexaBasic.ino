@@ -8,7 +8,7 @@
 #endif
 #include <Espalexa.h>
 
-#define D1 5 //GPIO 5 para la entrada D1
+#define out 5 //GPIO 5 para la entrada D1 del NodeMCU
 
 // prototypes
 boolean connectWifi();
@@ -26,10 +26,10 @@ Espalexa espalexa;
 
 void setup()
 {
-  pinMode(D1, OUTPUT);
+  pinMode(out, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);
-  digitalWrite(D1, LOW); // Por defecto lo ponemos como apagado. Ya que así se define desde EspAlexa
+  digitalWrite(out, LOW); // Por defecto lo ponemos como apagado. Ya que así se define desde EspAlexa
   Serial.begin(115200);
   // Initialise wifi connection
   wifiConnected = connectWifi();
@@ -37,7 +37,7 @@ void setup()
   if(wifiConnected){
     
     // Define your devices here. 
-    espalexa.addDevice("Foco 1", firstLightChanged); //simplest definition, default state off
+    espalexa.addDevice("Foco del cuarto de juegos", firstLightChanged); //simplest definition, default state off
 
     espalexa.begin();
     
@@ -65,13 +65,13 @@ void firstLightChanged(uint8_t brightness) {
     //EXAMPLE
     if (brightness) {
       digitalWrite(LED_BUILTIN, LOW);
-      digitalWrite(D1, HIGH);
+      digitalWrite(out, HIGH);
       Serial.print("ON, brightness ");
       Serial.println(brightness);
     }
     else  {
       digitalWrite(LED_BUILTIN, HIGH);
-      digitalWrite(D1, LOW);
+      digitalWrite(out, LOW);
       Serial.println("OFF");
     }
 }
