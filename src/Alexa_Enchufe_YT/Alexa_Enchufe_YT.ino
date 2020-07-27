@@ -25,8 +25,8 @@ unsigned long debounceDelay = 50;
 
 #define SERIAL_BAUDRATE 115200
 
-#define WIFI_SSID "..."
-#define WIFI_PASS "..."
+#define WIFI_SSID "INFINITUMC3DD_2.4"
+#define WIFI_PASS "5RxAGM8u4m"
 
 #define LAMP_1 "Foco del cuarto de juegos" // Nombre del dispositivo en Alexa
 
@@ -97,10 +97,10 @@ void setup() {
       Serial.println("RELAY 1 switched by Alexa");
       //digitalWrite(TRIAC_PIN, !digitalRead(TRIAC_PIN));
       if (state) {
-        digitalWrite(TRIAC_PIN, HIGH);
+        digitalWrite(TRIAC_PIN, LOW);
         estado = 1;
       } else {
-        digitalWrite(TRIAC_PIN, LOW);
+        digitalWrite(TRIAC_PIN, HIGH);
         estado = 0;
       }
     }
